@@ -185,7 +185,7 @@ const handleSubmit = async (e) => {
 
 
   return (
-<div className="h-[120%] pt-6 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#3B1C08] via-gray-900 to-[#3B1C08] flex items-center justify-center p-4 relative overflow-hidden">
+<div className="h-[120%] pt-6  bg-[#3B1C08] flex items-center justify-center p-4 relative overflow-hidden">
   <div className="absolute inset-0 z-0">
     <div className="starfield opacity-50"></div>
     <div className="inset-0 bg-gradient-to-t from-transparent via-gray-900/50 to-[#3B1C08]"></div>
@@ -197,29 +197,29 @@ const handleSubmit = async (e) => {
 
   {loading && <Loader label={actionLabel} />}
 
-  <div className="max-w-md mt-20 w-full bg-gray-900/40 backdrop-blur-xl rounded-xl p-4 border border-indigo-500/20 shadow-xl relative z-10 hover:border-indigo-500/30 transition-all duration-500">
-    <div className="absolute -inset-px bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-xl opacity-20 group-hover:opacity-30 blur-xl transition-all duration-500"></div>
+  <div className="max-w-md mt-20 w-full bg-[#3B1C08] backdrop-blur-xl rounded-xl p-4 border border-orange-500/20 shadow-xl relative z-10 hover:border-orange-500/30 transition-all duration-500">
+    <div className="absolute -inset-px bg-gradient-to-r from-gray-500 via-red-500 to-pink-500 rounded-xl opacity-20 group-hover:opacity-30 blur-xl transition-all duration-500"></div>
 
     <div className="relative pt-10">
       <div className="text-center mb-6">
         <div className="flex items-center justify-center mb-2">
-          <Sparkles className="h-5 w-5 text-indigo-400 animate-pulse" />
+          <Sparkles className="h-5 w-5 text-orange-400 animate-pulse" />
         </div>
-        <h1 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 mb-2">
+        <h1 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-yellow-400 to-gray-400 mb-2">
           $DEM Token Presale
         </h1>
-        <p className="text-indigo-200 text-xs">Secure your tokens at the best price</p>
+        <p className="text-orange-200 text-xs">Secure your tokens at the best price</p>
       </div>
 
       <div className="grid grid-cols-2 gap-4 mb-6">
-        {[{ label: 'Raised', value: '$0', icon: <Shield className="h-4 w-4 text-indigo-400" /> },
-        { label: 'Time Left', value: '35 days', icon: <Clock className="h-4 w-4 text-indigo-400" /> },
-        { label: 'Token Price', value: '0.18 USD', icon: <Clock className="h-4 w-4 text-indigo-400" /> },
+        {[{ label: 'Raised', value: '$0', icon: <Shield className="h-4 w-4 text-orange-400" /> },
+        { label: 'Time Left', value: '35 days', icon: <Clock className="h-4 w-4 text-orange-400" /> },
+        { label: 'Token Price', value: '0.18 USD', icon: <Clock className="h-4 w-4 text-orange-400" /> },
       ].map((stat, index) => (
-          <div key={index} className="bg-gray-800/50 rounded-lg p-3 border border-indigo-500/20 hover:border-indigo-500/40 transition-all duration-300">
+          <div key={index} className="bg-gray-800/50 rounded-lg p-3 border border-orange-500/20 hover:border-orange-500/40 transition-all duration-300">
             <div className="flex items-center gap-2 mb-1">
               {stat.icon}
-              <p className="text-xs text-indigo-200">{stat.label}</p>
+              <p className="text-xs text-orange-200">{stat.label}</p>
             </div>
             <p className="text-md font-bold text-white">{stat.value}</p>
           </div>
@@ -227,16 +227,16 @@ const handleSubmit = async (e) => {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="bg-gray-800/30 rounded-lg p-4 border border-indigo-500/20">
-          <label className="block text-xs font-medium text-indigo-200 mb-2">Select Payment Method</label>
+        <div className="bg-gray-800/30 rounded-lg p-4 border border-orange-500/20">
+          <label className="block text-xs font-medium text-orange-200 mb-2">Select Payment Method</label>
           <div className="grid grid-cols-2 gap-2">
             {['ETH', 'USDT'].map((method) => (
               <button
                 key={method}
                 type="button"
                 className={`py-2 rounded-md text-xs font-medium transition-all duration-300 ${paymentMethod === method
-                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-500/20'
-                    : 'bg-gray-800/50 text-gray-300 hover:bg-gray-800/80 border border-indigo-500/20'
+                    ? 'bg-gradient-to-r from-orange-600 to-yellow-600 text-white shadow-md shadow-orange-500/20'
+                    : 'bg-gray-800/50 text-gray-300 hover:bg-gray-800/80 border border-orange-500/20'
                   }`}
                 onClick={() => setPaymentMethod(method)}
               >
@@ -246,42 +246,42 @@ const handleSubmit = async (e) => {
           </div>
         </div>
 
-        <div className="bg-gray-800/30 rounded-lg p-4 border border-indigo-500/20">
-          <label htmlFor="amount" className="block text-xs font-medium text-indigo-200 mb-2">
+        <div className="bg-gray-800/30 rounded-lg p-4 border border-orange-500/20">
+          <label htmlFor="amount" className="block text-xs font-medium text-orange-200 mb-2">
             Amount ({paymentMethod})
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <DollarSign className="h-4 w-4 text-indigo-400" />
+              <DollarSign className="h-4 w-4 text-orange-400" />
             </div>
             <input
               type="number"
               id="amount"
               placeholder={`Enter amount in ${paymentMethod}`}
-              className="w-full pl-9 pr-3 py-2 bg-gray-900/50 border border-indigo-500/30 rounded-md text-xs text-white placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
+              className="w-full pl-9 pr-3 py-2 bg-gray-900/50 border border-orange-500/30 rounded-md text-xs text-white placeholder-gray-500 focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               step="0.1"
             />
           </div>
-          <p className="mt-1 text-xs text-indigo-200">
+          <p className="mt-1 text-xs text-orange-200">
             Min. purchase: {paymentMethod === 'ETH' ? '0.0001 ETH' : '1 USDT'}
           </p>
           {paymentMethod === 'ETH' && (
-            <p className="mt-1 text-xs text-indigo-200">
+            <p className="mt-1 text-xs text-orange-200">
               Your ETH Balance: {nativeBalance ? nativeBalance.formatted : 'Loading...'} ETH
             </p>
           )}
           {paymentMethod === 'USDT' && (
-            <p className="mt-1 text-xs text-indigo-200">
+            <p className="mt-1 text-xs text-orange-200">
               Your USDT Balance: {balance ? (Number(balance) / 1e18).toLocaleString() : 'Loading...'} USDT
             </p>
           )}
         </div>
 
-        <div className="bg-gradient-to-r from-indigo-900/50 to-purple-900/50 rounded-lg p-4 border border-indigo-500/30">
+        <div className="bg-gradient-to-r from-orange-900/50 to-purple-900/50 rounded-lg p-4 border border-orange-500/30">
           <div className="flex justify-between items-center">
-            <span className="text-xs text-indigo-200">You'll receive:</span>
+            <span className="text-xs text-orange-200">You'll receive:</span>
             <span className="text-md font-bold text-white">{calculateTokens()} $DEM</span>
           </div>
         </div>
@@ -291,7 +291,7 @@ const handleSubmit = async (e) => {
   className={`w-full flex justify-center items-center gap-2 py-2 px-4 text-sm font-semibold text-white rounded-md transition duration-300
     ${loading
       ? 'bg-gray-700 cursor-not-allowed'
-      : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700'}
+      : 'bg-gradient-to-r from-orange-600 to-yellow-600 hover:from-orange-700 hover:to-purple-700'}
   `}
 >
   {loading ? (
@@ -311,7 +311,7 @@ const handleSubmit = async (e) => {
 </button>
 
 
-        <p className="text-center text-xs text-indigo-200/80">
+        <p className="text-center text-xs text-orange-200/80">
           By proceeding, you agree to our Terms of Service and confirm that you are eligible to participate.
         </p>
       </form>
