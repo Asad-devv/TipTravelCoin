@@ -53,7 +53,7 @@ DemocracyCoin ($DEM) is the digital asset of the Democracy Project, a civic-tech
 
   {/* Right side - Image or illustration */}
   <div className="flex-1  flex justify-center items-center">
-    <img src="https://www.economist.com/cdn-cgi/image/width=1424,quality=80,format=auto/sites/default/files/20140301_ESP010.jpg" alt="Democracy Coin Illustration" className="w-[90vh] hidden md:block h-[65vh] rounded-xl shadow-xl max-ws-md" />
+    <img src="/public/logo.png" alt="Democracy Coin Illustration" className=" w-[75vh] hidden md:block h-[70vh] rounded-xl shadow-xl max-ws-md" />
   </div>
 </div>
 
