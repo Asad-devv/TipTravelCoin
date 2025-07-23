@@ -89,7 +89,7 @@ const Navbar = () => {
                 <div className="flex items-center justify-between h-[90px]">
                     {/* Logo */}
                     <Link to="/" className="flex-shrink-0 text-2xl text-blue-900 shadow-gray-400 rounded-full font-extrabold flex items-center">
-                       <img src="./logo.png" className='h-14 w-22 rounded-'  /> 
+                       <img src="./logo.jpg" className='h-14 w-22 rounded-'  /> 
                     </Link>
 
                     {/* Desktop Navigation */}
@@ -107,13 +107,13 @@ const Navbar = () => {
                     </div>
 
                     {/* Desktop Presale Button */}
-                    <div className="hidden md:flex items-center">
-                        <a
+                    <div className="z-100 hidden md:flex items-center">
+                        <Link
                             href="/buy"
                             className="border-white border hover:text-black hover:bg-white px-6 py-2 rounded-lg font-semibold text-white transition-colors"
                         >
                             Presale
-                        </a>
+                        </Link>
                     </div>
 
                     {/* Connect Wallet Button (Always visible, in the main nav) */}

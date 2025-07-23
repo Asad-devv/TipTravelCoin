@@ -2,6 +2,39 @@ export const contractABI=[
 	{
 		"inputs": [
 			{
+				"internalType": "uint256",
+				"name": "_tokenAmount",
+				"type": "uint256"
+			}
+		],
+		"name": "buyToken",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "buyTokenWithETH",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_amount",
+				"type": "uint256"
+			}
+		],
+		"name": "depositTokens",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "address",
 				"name": "_tokenAddress",
 				"type": "address"
@@ -24,6 +57,11 @@ export const contractABI=[
 			{
 				"internalType": "address",
 				"name": "_ethUsdPriceFeed",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_owner",
 				"type": "address"
 			}
 		],
@@ -96,21 +134,45 @@ export const contractABI=[
 	{
 		"inputs": [
 			{
-				"internalType": "uint256",
-				"name": "_tokenAmount",
-				"type": "uint256"
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
 			}
 		],
-		"name": "buyToken",
+		"name": "transferOwnership",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "buyTokenWithETH",
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_tokenSalePrice",
+				"type": "uint256"
+			}
+		],
+		"name": "updateTokenSalePrice",
 		"outputs": [],
-		"stateMutability": "payable",
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "withdrawTokens",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -130,19 +192,6 @@ export const contractABI=[
 			}
 		],
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_amount",
-				"type": "uint256"
-			}
-		],
-		"name": "depositTokens",
-		"outputs": [],
-		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -236,6 +285,50 @@ export const contractABI=[
 		"inputs": [
 			{
 				"internalType": "uint256",
+				"name": "_tokenAmount",
+				"type": "uint256"
+			}
+		],
+		"name": "previewBuyToken",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "usdtAmount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "enoughTokensLeft",
+				"type": "bool"
+			},
+			{
+				"internalType": "bool",
+				"name": "enoughUsdtBalance",
+				"type": "bool"
+			},
+			{
+				"internalType": "bool",
+				"name": "enoughUsdtAllowance",
+				"type": "bool"
+			},
+			{
+				"internalType": "bool",
+				"name": "enoughTokensInContract",
+				"type": "bool"
+			},
+			{
+				"internalType": "bool",
+				"name": "canBuy",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
 			}
@@ -293,19 +386,6 @@ export const contractABI=[
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "tokenSymbol",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
 		"inputs": [
 			{
 				"internalType": "address",
@@ -319,6 +399,19 @@ export const contractABI=[
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "tokenSymbol",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
 			}
 		],
 		"stateMutability": "view",
@@ -364,32 +457,6 @@ export const contractABI=[
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "newOwner",
-				"type": "address"
-			}
-		],
-		"name": "transferOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_tokenSalePrice",
-				"type": "uint256"
-			}
-		],
-		"name": "updateTokenSalePrice",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"inputs": [],
 		"name": "usdt",
 		"outputs": [
@@ -415,4 +482,4 @@ export const contractABI=[
 		"stateMutability": "view",
 		"type": "function"
 	}
-] 
+]
