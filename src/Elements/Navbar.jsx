@@ -109,7 +109,7 @@ const Navbar = () => {
                     {/* Desktop Presale Button */}
                     <div className="z-100 hidden md:flex items-center">
                         <Link
-                            href="/buy"
+                            to="/buy"
                             className="border-white border hover:text-black hover:bg-white px-6 py-2 rounded-lg font-semibold text-white transition-colors"
                         >
                             Presale

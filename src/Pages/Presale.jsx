@@ -8,7 +8,7 @@
   import SuccessModal from '../Elements/Modal';
   import Loader from "../Elements/Loader"
   import toast from "react-hot-toast"
-  const contractAddress = '0x10956d053f466fc5293813605A5E1813Ecbf9E44'; // Your token contract address
+  const contractAddress = '0xB614930625638840283F1C46F7c40559A740052C'; // Your token contract address
   const USDTAddress = '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9'; // USDT contract address (mainnet)
 
 
