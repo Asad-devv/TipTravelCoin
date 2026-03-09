@@ -1,17 +1,4 @@
-export const contractABI=[
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_tokenAmount",
-				"type": "uint256"
-			}
-		],
-		"name": "buyToken",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
+export const contractABI = [
 	{
 		"inputs": [],
 		"name": "buyTokenWithETH",
@@ -37,11 +24,6 @@ export const contractABI=[
 			{
 				"internalType": "address",
 				"name": "_tokenAddress",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_usdtAddress",
 				"type": "address"
 			},
 			{
@@ -93,6 +75,25 @@ export const contractABI=[
 			{
 				"indexed": false,
 				"internalType": "uint256",
+				"name": "oldPrice",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "newPrice",
+				"type": "uint256"
+			}
+		],
+		"name": "TokenSalePriceUpdated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "uint256",
 				"name": "amount",
 				"type": "uint256"
 			}
@@ -118,7 +119,7 @@ export const contractABI=[
 			{
 				"indexed": false,
 				"internalType": "uint256",
-				"name": "usdtAmount",
+				"name": "ethPaid",
 				"type": "uint256"
 			},
 			{
@@ -176,23 +177,8 @@ export const contractABI=[
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_tokenAmount",
-				"type": "uint256"
-			}
-		],
-		"name": "calculateUSDTAmount",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
+		"stateMutability": "payable",
+		"type": "receive"
 	},
 	{
 		"inputs": [],
@@ -238,7 +224,7 @@ export const contractABI=[
 					},
 					{
 						"internalType": "uint256",
-						"name": "usdtPaid",
+						"name": "ethPaid",
 						"type": "uint256"
 					},
 					{
@@ -285,15 +271,15 @@ export const contractABI=[
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "_tokenAmount",
+				"name": "_ethAmount",
 				"type": "uint256"
 			}
 		],
-		"name": "previewBuyToken",
+		"name": "previewBuyWithETH",
 		"outputs": [
 			{
 				"internalType": "uint256",
-				"name": "usdtAmount",
+				"name": "tokenAmount",
 				"type": "uint256"
 			},
 			{
@@ -303,23 +289,21 @@ export const contractABI=[
 			},
 			{
 				"internalType": "bool",
-				"name": "enoughUsdtBalance",
-				"type": "bool"
-			},
-			{
-				"internalType": "bool",
-				"name": "enoughUsdtAllowance",
-				"type": "bool"
-			},
-			{
-				"internalType": "bool",
 				"name": "enoughTokensInContract",
 				"type": "bool"
-			},
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "PRICE_FEED_STALENESS",
+		"outputs": [
 			{
-				"internalType": "bool",
-				"name": "canBuy",
-				"type": "bool"
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -347,7 +331,7 @@ export const contractABI=[
 			},
 			{
 				"internalType": "uint256",
-				"name": "usdtPaid",
+				"name": "ethPaid",
 				"type": "uint256"
 			},
 			{
@@ -419,7 +403,7 @@ export const contractABI=[
 	},
 	{
 		"inputs": [],
-		"name": "totalRaisedUSDT",
+		"name": "totalRaisedETH",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -451,32 +435,6 @@ export const contractABI=[
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "usdt",
-		"outputs": [
-			{
-				"internalType": "contract IERC20",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "usdtAddress",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
 			}
 		],
 		"stateMutability": "view",

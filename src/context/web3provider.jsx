@@ -1,10 +1,9 @@
 import { createAppKit } from '@reown/appkit/react'
 
 import { WagmiProvider } from 'wagmi'
-import {arbitrum} from '@reown/appkit/networks'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
-
+import { bscTestnet } from '@reown/appkit/networks'
 // export const config = createConfig(
 //   getDefaultConfig({
 //     // Your dApps chains
@@ -36,7 +35,7 @@ const metadata = {
 }
 
 // 3. Set the networks
-const networks = [arbitrum]
+const networks = [bscTestnet]
 
 // 4. Create Wagmi Adapter
 const wagmiAdapter = new WagmiAdapter({

@@ -1,365 +1,372 @@
-  import React, { useState } from 'react';
-  import { DollarSign, Wallet, ArrowRight, Sparkles, Shield, Clock } from 'lucide-react';
-  import { useAccount, useWriteContract, useReadContract,useBalance  } from 'wagmi';
-  import { contractABI } from '../abi/ABI';
-  import { erc20Abi } from 'viem';
-  import { useWalletClient } from 'wagmi';
-  import { ethers } from 'ethers';
-  import SuccessModal from '../Elements/Modal';
-  import Loader from "../Elements/Loader"
-  import toast from "react-hot-toast"
-  const contractAddress = '0xB614930625638840283F1C46F7c40559A740052C'; // Your token contract address
-  const USDTAddress = '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9'; // USDT contract address (mainnet)
+import React, { useState, useMemo } from 'react';
+import { DollarSign, ArrowRight, Sparkles, Zap, Shield, ChevronDown, Wallet, Coins, CheckCircle2 } from 'lucide-react';
+import { useAccount, useBalance, useReadContract } from 'wagmi';
+import { contractABI } from '../abi/ABI';
+import { useWalletClient } from 'wagmi';
+import { ethers } from 'ethers';
+import SuccessModal from '../Elements/Modal';
+import Loader from "../Elements/Loader";
+import toast from "react-hot-toast";
 
+const contractAddress = '0xb6742608E867268b44a412cd61dc298D61EB009B';
 
-  const wagmiContractConfig = {
-    address: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9', // USDT contract address
-    abi: [
-      {
-        type: 'function',
-        name: 'balanceOf',
-        stateMutability: 'view',
-        inputs: [{ name: 'account', type: 'address' }],
-        outputs: [{ type: 'uint256' }],
-      },
-      {
-        type: 'function',
-        name: 'totalSupply',
-        stateMutability: 'view',
-        inputs: [],
-        outputs: [{ name: 'supply', type: 'uint256' }],
-      },
-      {
-        type: 'function',
-        name: 'allowance',
-        stateMutability: 'view',
-        inputs: [
-          { name: 'owner', type: 'address' },
-          { name: 'spender', type: 'address' }
-        ],
-        outputs: [{ type: 'uint256' }],
-      },
-      {
-        type: 'function',
-        name: 'approve',
-        stateMutability: 'nonpayable',
-        inputs: [
-          { name: 'spender', type: 'address' },
-          { name: 'amount', type: 'uint256' }
-        ],
-        outputs: [{ type: 'bool' }],
-      },
-    ],
-  };
+function App() {
+  const [amount, setAmount] = useState('');
+  const { address } = useAccount();
+  const [loading, setLoading] = useState(false);
+  const [actionLabel, setActionLabel] = useState('');
+  const [purchasedTokens, setPurchasedTokens] = useState(null);
+  const [showHowItWorks, setShowHowItWorks] = useState(false);
 
-  function App() {
-    const [amount, setAmount] = useState('');
-    const [paymentMethod, setPaymentMethod] = useState('ETH');
-    const [totalTokens, setTotalTokens] = useState(0);
-    const { address } = useAccount();
-    const [loading, setLoading] = useState(false);
-    const [actionLabel, setActionLabel] = useState('');
-    const [tokensBought, setTokensBought] = useState();
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-React.useEffect(() => {
-  const updateTokens = async () => {
-    const tokens = await calculateTokens();
-    setTotalTokens(tokens);
-  };
+  const { data: walletClient } = useWalletClient();
+  const signer = walletClient
+    ? new ethers.providers.Web3Provider(walletClient.transport).getSigner()
+    : null;
 
-  if (amount && !isNaN(parseFloat(amount))) {
-    updateTokens();
-  } else {
-    setTotalTokens('0');
-  }
-}, [amount, paymentMethod]);
-    const { data: walletClient } = useWalletClient();
-    const signer = walletClient ? new ethers.providers.Web3Provider(walletClient.transport).getSigner() : null;
+  const { data: nativeBalance } = useBalance({ address });
 
-    const {     isPending,
-      writeContract } = useWriteContract();
-    const { data: balance } = useReadContract({
-      ...wagmiContractConfig,
-      functionName: 'balanceOf',
-      args: [address],
-    });
+  // ── Contract reads ───────────────────────────────────────────────
 
-    const { data: allowance } = useReadContract({
-      ...wagmiContractConfig,
-      functionName: 'allowance',
-      args: [address, contractAddress],
-    });
-    const { data: nativeBalance } = useBalance({
-      address: address, // your user's wallet address
-    });
+  const { data: tokensSold } = useReadContract({
+    address: contractAddress,
+    abi: contractABI,
+    functionName: 'totalTokensSold',
+  });
 
-  const calculateTokens = async () => {
-    if (!amount || isNaN(parseFloat(amount))) return '0';
-    const amt = parseFloat(amount);
+  const { data: totalSupplyRaw } = useReadContract({
+    address: contractAddress,
+    abi: contractABI,
+    functionName: 'totalSupply',
+  });
 
-    if (paymentMethod === 'ETH') {
-    const provider = walletClient ? new ethers.providers.Web3Provider(walletClient.transport) : null;
-      const priceFeed = new ethers.Contract(
-        '0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612',
-        [
-          {
-            inputs: [],
-            name: 'latestRoundData',
-            outputs: [
-              { internalType: 'uint80', name: 'roundId', type: 'uint80' },
-              { internalType: 'int256', name: 'answer', type: 'int256' },
-              { internalType: 'uint256', name: 'startedAt', type: 'uint256' },
-              { internalType: 'uint256', name: 'updatedAt', type: 'uint256' },
-              { internalType: 'uint80', name: 'answeredInRound', type: 'uint80' },
-            ],
-            stateMutability: 'view',
-            type: 'function',
-          },
-        ],
-        provider
-      );
+  // User's total tokens bought from this presale
+  const { data: userTokensBoughtRaw, refetch: refetchUserTokens } = useReadContract({
+    address: contractAddress,
+    abi: contractABI,
+    functionName: 'tokensBought',
+    args: [address],
+    query: { enabled: !!address },
+  });
 
-      const roundData = await priceFeed.latestRoundData();
-      const ethPrice = Number(roundData.answer) / 1e8; // ETH price in USD
-      const tokenPrice = 0.18;
-      const tokensPerETH = ethPrice / tokenPrice;
-
-      return (amt * tokensPerETH).toLocaleString();
-    } else {
-      const tokenPrice = 0.18;
-      return (amt / tokenPrice).toLocaleString(); // USDT amount / price per token
+  // Parse amount to wei for the contract preview call
+  const parsedAmountWei = useMemo(() => {
+    if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) return undefined;
+    try {
+      return BigInt(ethers.utils.parseEther(parseFloat(amount).toString()).toString());
+    } catch {
+      return undefined;
     }
-  };
+  }, [amount]);
 
-    
+  // previewBuyWithETH — uses exact same math as the contract, no client-side Chainlink call needed
+  const { data: previewData, isError: previewError, isLoading: previewLoading } = useReadContract({
+    address: contractAddress,
+    abi: contractABI,
+    functionName: 'previewBuyWithETH',
+    args: [parsedAmountWei ?? 0n],
+    query: { enabled: !!parsedAmountWei },
+  });
 
-    const buyTokenWithETH = async () => {
-      if (!signer) return;
-      try {
-        setLoading(true);
-        setActionLabel('Processing ETH transaction...');
-    
-        const contract = new ethers.Contract(contractAddress, contractABI, signer);
-        const tx = await contract.buyTokenWithETH({
-          value: ethers.utils.parseEther(amount.toString())
-        });
-        await tx.wait();
-        const tokens = await calculateTokens();
-        setTokensBought(tokens);
-        setShowSuccessModal(true);
-        console.log('ETH Transaction confirmed');
-      } catch (error) {
-        toast.error('Error buying token with ETH:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    
-    const approveUSDT = async () => {
-      if (!signer) return;
-      try {
-        setLoading(true);
-        setActionLabel('Approving USDT...');
-    
-        const usdtContract = new ethers.Contract(USDTAddress, erc20Abi, signer);
-        const tokenAmount = ethers.utils.parseUnits(await calculateTokens(), 18); // assuming USDT has 18 decimals
-        const tx = await usdtContract.approve(contractAddress, tokenAmount);
-        await tx.wait();
-        toast.success("Approval Transaction Done! Now Purchasing Tokens")
+  // ── Derived display values ───────────────────────────────────────
 
-        console.log('USDT Approved');
-      } catch (error) {
-        toast.error('Error approving USDT:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    const buyTokenWithUSDT = async () => {
-      if (!signer) return;
-      try {
-        setLoading(true);
-        setActionLabel('Processing USDT transaction...');
-    
-        const contract = new ethers.Contract(contractAddress, contractABI, signer);
-        
-        const tokenAmount = ethers.utils.parseUnits(await calculateTokens(), 18);
-        const tx = await contract.buyToken(tokenAmount);
-        await tx.wait();
-        const tokens = calculateTokens();
-        setTokensBought(tokens);
-        setShowSuccessModal(true);
-        console.log('USDT Transaction confirmed');
-      } catch (error) {
-        toast.error('Error buying token with USDT:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const presaleProgress = tokensSold && totalSupplyRaw && BigInt(totalSupplyRaw) > 0n
+    ? Math.min(Number((BigInt(tokensSold) * 10000n) / BigInt(totalSupplyRaw)) / 100, 100)
+    : 0;
 
-    
+  const tokensSoldDisplay = tokensSold
+    ? (Number(BigInt(tokensSold)) / 1e18).toLocaleString(undefined, { maximumFractionDigits: 0 })
+    : '0';
+
+  // previewData is [tokenAmount (bigint), enoughTokensLeft (bool), enoughTokensInContract (bool)]
+  const previewTokenAmount  = previewData?.[0] ?? previewData?.tokenAmount;
+  const enoughTokensLeft    = previewData?.[1] ?? previewData?.enoughTokensLeft;
+  const enoughInContract    = previewData?.[2] ?? previewData?.enoughTokensInContract;
+
+  const displayTokens = useMemo(() => {
+    if (!previewTokenAmount) return '0';
+    return (Number(BigInt(previewTokenAmount)) / 1e18).toLocaleString(undefined, { maximumFractionDigits: 4 });
+  }, [previewTokenAmount]);
+
+  const userTokensDisplay = userTokensBoughtRaw && BigInt(userTokensBoughtRaw) > 0n
+    ? (Number(BigInt(userTokensBoughtRaw)) / 1e18).toLocaleString(undefined, { maximumFractionDigits: 2 })
+    : null;
+
+  const ethBalance = nativeBalance
+    ? parseFloat(ethers.utils.formatEther(nativeBalance.value)).toFixed(4)
+    : '—';
+
+  // ── Validation warnings ──────────────────────────────────────────
+
+  const showNotEnoughLeft     = parsedAmountWei && previewData && !enoughTokensLeft;
+  const showNotEnoughContract = parsedAmountWei && previewData && !enoughInContract;
+  const showPriceError        = parsedAmountWei && previewError;
+  const buyDisabled           = loading || !amount || !signer || showNotEnoughLeft || showNotEnoughContract;
+
+  // ── Buy handler ──────────────────────────────────────────────────
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true)
-    if (!amount) return;
+    if (!signer) {
+      toast.error('Please connect your wallet first.');
+      return;
+    }
+    if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
+      toast.error('Enter a valid ETH amount.');
+      return;
+    }
+    if (showNotEnoughLeft) {
+      toast.error('Not enough tokens left in the presale.');
+      return;
+    }
+    if (showNotEnoughContract) {
+      toast.error('Not enough tokens in contract. Contact support.');
+      return;
+    }
     try {
-      if (paymentMethod === 'ETH') {
-        await buyTokenWithETH();
-      } else {
-        const tokenAmount = parseFloat(calculateTokens());
-        if (parseFloat(allowance) < tokenAmount) {
-          await approveUSDT();
-          await buyTokenWithUSDT();
-        } else {
-          await buyTokenWithUSDT();
-        }
-      }
-      toast.success("Token Purchase Done")
-      setLoading(false)
+      setLoading(true);
+      setActionLabel('Processing transaction...');
+      const contract = new ethers.Contract(contractAddress, contractABI, signer);
+      const tx = await contract.buyTokenWithETH({
+        value: ethers.utils.parseEther(parseFloat(amount).toString()),
+      });
+      await tx.wait();
+      // Show the token amount we previewed (contract math)
+      setPurchasedTokens(displayTokens);
+      setAmount('');
+      refetchUserTokens();
+      toast.success('Token purchase complete!');
     } catch (error) {
-      setLoading(false)
-      toast.error("Error during the transaction:", error);
+      const reason = error?.reason || error?.data?.message || '';
+      if (reason.includes('Stale price feed')) {
+        toast.error('Price feed is temporarily unavailable. Try again shortly.');
+      } else if (reason.includes('Not enough tokens')) {
+        toast.error('Not enough tokens left in the presale.');
+      } else {
+        toast.error('Transaction failed. Please try again.');
+      }
+    } finally {
+      setLoading(false);
+      setActionLabel('');
     }
   };
 
+  return (
+    <div className="presale-root min-h-screen pt-24 pb-16 flex items-center justify-center relative overflow-hidden">
+      <div className="presale-bg-base" />
+      <div className="presale-bg-glow-top" />
+      <div className="presale-bg-glow-left" />
+      <div className="presale-bg-glow-right" />
+      <div className="presale-grid-overlay" />
 
-    return (
-  <div className="h-[120%] pt-6  bg-[#3B1C08] flex items-center justify-center p-4 relative overflow-hidden">
-    <div className="absolute inset-0 z-0">
-      <div className="starfield opacity-50"></div>
-      <div className="inset-0 bg-gradient-to-t from-transparent via-gray-900/50 to-[#3B1C08]"></div>
-    </div>
-    <SuccessModal
-    tokensBought={tokensBought}
-    onClose={() => setTokensBought(null)}
-  />
+      <SuccessModal tokensBought={purchasedTokens} onClose={() => setPurchasedTokens(null)} />
+      {loading && <Loader label={actionLabel} />}
 
-    {loading && <Loader label={actionLabel} />}
+      <div className="relative z-10 w-full max-w-lg px-4">
 
-    <div className="max-w-md mt-20 w-full bg-[#3B1C08] backdrop-blur-xl rounded-xl p-4 border border-orange-500/20 shadow-xl relative z-10 hover:border-orange-500/30 transition-all duration-500">
-      <div className="absolute -inset-px bg-gradient-to-r from-gray-500 via-red-500 to-pink-500 rounded-xl opacity-20 group-hover:opacity-30 blur-xl transition-all duration-500"></div>
-
-      <div className="relative pt-10">
-        <div className="text-center mb-6">
-          <div className="flex items-center justify-center mb-2">
-            <Sparkles className="h-5 w-5 text-orange-400 animate-pulse" />
+        {/* Live badge */}
+        <div className="flex justify-center mb-5">
+          <div className="presale-badge">
+            <span className="presale-badge-dot" />
+            <span>Phase 1 Presale — Live Now</span>
           </div>
-          <h1 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-yellow-400 to-gray-400 mb-2">
-            DEM(Democracy) Token Presale
-          </h1>
-          <p className="text-orange-200 text-xs">Secure your tokens at the best price</p>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 mb-6">
+        {/* Hero */}
+        <div className="text-center mb-10">
+          <p className="presale-eyebrow">TIP Nation Ecosystem</p>
+          <h1 className="presale-title">TipTravelCoin</h1>
+          <div className="presale-ticker-row">
+            <span className="presale-ticker">$TTC</span>
+          </div>
+          <p className="presale-subtitle">
+            Travel. Earn. Empower Communities.<br />
+            <span className="presale-subtitle-highlight">Enter the decentralized travel economy.</span>
+          </p>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-3 gap-3 mb-6">
           {[
-          { label: 'Time Left', value: '35 days', icon: <Clock className="h-4 w-4 text-orange-400" /> },
-          { label: 'Token Price', value: '0.18 USD', icon: <Clock className="h-4 w-4 text-orange-400" /> },
-        ].map((stat, index) => (
-            <div key={index} className="bg-gray-800/50 rounded-lg p-3 border border-orange-500/20 hover:border-orange-500/40 transition-all duration-300">
-              <div className="flex items-center gap-2 mb-1">
-                {stat.icon}
-                <p className="text-xs text-orange-200">{stat.label}</p>
-              </div>
-              <p className="text-md font-bold text-white">{stat.value}</p>
+            { label: 'Token Price', value: '$0.01', sub: 'Phase 1' },
+            { label: 'Total Supply', value: '50M',  sub: '$TTC'   },
+            { label: 'Time Left',   value: '35',    sub: 'Days'   },
+          ].map((stat, i) => (
+            <div key={i} className="presale-stat-card">
+              <p className="presale-stat-label">{stat.label}</p>
+              <p className="presale-stat-value">{stat.value}</p>
+              <p className="presale-stat-sub">{stat.sub}</p>
             </div>
           ))}
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="bg-gray-800/30 rounded-lg p-4 border border-orange-500/20">
-            <label className="block text-xs font-medium text-orange-200 mb-2">Select Payment Method</label>
-            <div className="grid grid-cols-2 gap-2">
-              {['ETH', 'USDT'].map((method) => (
-                <button
-                  key={method}
-                  type="button"
-                  className={`py-2 rounded-md text-xs font-medium transition-all duration-300 ${paymentMethod === method
-                      ? 'bg-gradient-to-r from-orange-600 to-yellow-600 text-white shadow-md shadow-orange-500/20'
-                      : 'bg-gray-800/50 text-gray-300 hover:bg-gray-800/80 border border-orange-500/20'
-                    }`}
-                  onClick={() => setPaymentMethod(method)}
-                >
-                  {method}
-                </button>
-              ))}
+        {/* Main card */}
+        <div className="presale-card">
+
+          {/* Card header */}
+          <div className="presale-card-header">
+            <Sparkles className="h-4 w-4 text-amber-400" />
+            <span>Secure your $TTC tokens</span>
+          </div>
+
+          {/* Presale Progress */}
+          <div className="mb-6">
+            <div className="flex justify-between items-center mb-2">
+              <span className="presale-progress-label">Phase 1 Progress</span>
+              <span className="presale-progress-pct">
+                {presaleProgress.toFixed(2)}% Sold
+              </span>
+            </div>
+            <div className="presale-progress-track">
+              <div
+                className="presale-progress-fill"
+                style={{ width: `${Math.max(presaleProgress, 0.5)}%` }}
+              >
+                <div className="presale-progress-shine" />
+              </div>
+            </div>
+            <div className="flex justify-between mt-1.5">
+              <span className="presale-progress-end">{tokensSoldDisplay} sold</span>
+              <span className="presale-progress-end">50,000,000 $TTC</span>
             </div>
           </div>
 
-          <div className="bg-gray-800/30 rounded-lg p-4 border border-orange-500/20">
-            <label htmlFor="amount" className="block text-xs font-medium text-orange-200 mb-2">
-              Amount ({paymentMethod})
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <DollarSign className="h-4 w-4 text-orange-400" />
+          {/* ETH amount input */}
+          <div className="mb-5">
+            <div className="flex justify-between items-center mb-2.5">
+              <label className="presale-label">You Pay</label>
+              <span className="presale-balance-label">
+                Balance:&nbsp;
+                <span className="presale-balance-value">{ethBalance} ETH</span>
+              </span>
+            </div>
+            <div className="presale-input-wrap">
+              <div className="presale-input-icon">
+                <DollarSign className="h-4 w-4 text-amber-400" />
               </div>
               <input
                 type="number"
-                id="amount"
-                placeholder={`Enter amount in ${paymentMethod}`}
-                className="w-full pl-9 pr-3 py-2 bg-gray-900/50 border border-orange-500/30 rounded-md text-xs text-white placeholder-gray-500 focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300"
+                placeholder="0.00"
+                className="presale-input"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                step="0.1"
+                step="0.0001"
               />
+              <div className="presale-input-currency">ETH</div>
+              <button
+                type="button"
+                onClick={() => nativeBalance && setAmount(ethers.utils.formatEther(nativeBalance.value))}
+                className="presale-input-max"
+              >
+                MAX
+              </button>
             </div>
-            <p className="mt-1 text-xs text-orange-200">
-              Min. purchase: {paymentMethod === 'ETH' ? '0.0001 ETH' : '1 USDT'}
-            </p>
-            {paymentMethod === 'ETH' && (
-              <p className="mt-1 text-xs text-orange-200">
-                Your ETH Balance: {nativeBalance ? nativeBalance.formatted : 'Loading...'} ETH
-              </p>
+            <p className="mt-2 text-[11px] text-slate-500">Min. purchase: 0.0001 ETH</p>
+            {showNotEnoughLeft && (
+              <p className="mt-1.5 text-[11px] text-red-400">Not enough tokens left in the presale.</p>
             )}
-            {paymentMethod === 'USDT' && (
-              <p className="mt-1 text-xs text-orange-200">
-                Your USDT Balance: {balance ? (Number(balance) / 1e18).toLocaleString() : 'Loading...'} USDT
-              </p>
+            {showNotEnoughContract && (
+              <p className="mt-1.5 text-[11px] text-red-400">Presale contract is out of tokens. Contact support.</p>
+            )}
+            {showPriceError && (
+              <p className="mt-1.5 text-[11px] text-yellow-500">Price feed unavailable. Preview may be delayed.</p>
             )}
           </div>
 
-          <div className="bg-gradient-to-r from-orange-900/50 to-purple-900/50 rounded-lg p-4 border border-orange-500/30">
-            <div className="flex justify-between items-center">
-              <span className="text-xs text-orange-200">You'll receive:</span>
-              <span className="text-md font-bold text-white">{totalTokens} $DEM</span>
+          {/* You receive */}
+          <div className="presale-receive-box mb-6">
+            <div className="presale-receive-label">
+              <Zap className="h-4 w-4 text-amber-400" />
+              <span>You Receive</span>
+            </div>
+            <div className="presale-receive-value">
+              <span className="presale-receive-amount">
+                {previewLoading && parsedAmountWei ? '...' : displayTokens}
+              </span>
+              <span className="presale-receive-symbol">$TTC</span>
             </div>
           </div>
+
+          {/* How It Works */}
+          <div className="presale-hiw-wrap mb-5">
+            <button
+              type="button"
+              onClick={() => setShowHowItWorks(v => !v)}
+              className="presale-hiw-toggle"
+            >
+              <span>How It Works</span>
+              <ChevronDown className={`h-3.5 w-3.5 presale-hiw-chevron ${showHowItWorks ? 'presale-hiw-chevron--open' : ''}`} />
+            </button>
+            {showHowItWorks && (
+              <div className="presale-hiw-body">
+                {[
+                  { icon: <Wallet className="h-4 w-4" />, step: '01', title: 'Connect Wallet', desc: 'Use MetaMask or any Web3 wallet on Arbitrum.' },
+                  { icon: <Coins className="h-4 w-4" />, step: '02', title: 'Buy $TTC', desc: 'Enter an ETH amount and confirm the transaction.' },
+                  { icon: <CheckCircle2 className="h-4 w-4" />, step: '03', title: 'Tokens Delivered', desc: 'Your $TTC lands in your wallet instantly.' },
+                ].map((item, i) => (
+                  <div key={i} className="presale-hiw-step">
+                    <div className="presale-hiw-icon">{item.icon}</div>
+                    <div className="presale-hiw-text">
+                      <span className="presale-hiw-step-num">{item.step}</span>
+                      <span className="presale-hiw-step-title">{item.title}</span>
+                      <span className="presale-hiw-step-desc">{item.desc}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Buy button */}
           <button
-    onClick={handleSubmit}
-    disabled={loading}
-    className={`w-full flex justify-center items-center gap-2 py-2 px-4 text-sm font-semibold text-white rounded-md transition duration-300
-      ${loading
-        ? 'bg-gray-700 cursor-not-allowed'
-        : 'bg-gradient-to-r from-orange-600 to-yellow-600 hover:from-orange-700 hover:to-purple-700'}
-    `}
-  >
-    {loading ? (
-      <>
-        <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24">
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="white" strokeWidth="4" fill="none" />
-          <path className="opacity-75" fill="white" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-        </svg>
-        {actionLabel}
-      </>
-    ) : (
-      <>
-        <ArrowRight className="h-4 w-4" />
-        Buy with {paymentMethod}
-      </>
-    )}
-  </button>
+            onClick={handleSubmit}
+            disabled={buyDisabled}
+            className="presale-buy-btn"
+          >
+            {loading ? (
+              <>
+                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                <span>{actionLabel}</span>
+              </>
+            ) : !signer ? (
+              <span>Connect Wallet to Buy</span>
+            ) : (
+              <>
+                <span>Buy $TTC with ETH</span>
+                <ArrowRight className="h-4 w-4" />
+              </>
+            )}
+          </button>
 
+          {/* User's total purchased — shown only when they've bought tokens */}
+          {userTokensDisplay && (
+            <p className="text-center text-[11px] text-slate-500 mt-3">
+              Your total: <span className="text-amber-400 font-semibold">{userTokensDisplay} $TTC</span> purchased
+            </p>
+          )}
 
-          <p className="text-center text-xs text-orange-200/80">
-            By proceeding, you agree to our Terms of Service and confirm that you are eligible to participate.
-          </p>
-        </form>
+          {/* Trust row */}
+          <div className="flex items-center justify-center gap-5 mt-5">
+            <div className="presale-trust-item">
+              <Shield className="h-3.5 w-3.5 text-emerald-400" />
+              <span>Audited Contract</span>
+            </div>
+            <div className="presale-trust-divider" />
+            <div className="presale-trust-item">
+              <Shield className="h-3.5 w-3.5 text-sky-400" />
+              <span>Non-Custodial</span>
+            </div>
+          </div>
+        </div>
+
+        <p className="text-center text-[11px] text-slate-600 mt-5 px-4 leading-relaxed">
+          By proceeding you agree to our Terms of Service and confirm eligibility to participate.
+        </p>
       </div>
     </div>
-  </div>
+  );
+}
 
-    );
-  }
-
-  export default App;
+export default App;

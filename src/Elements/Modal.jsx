@@ -1,31 +1,53 @@
 import React from 'react';
-import { CheckCircle, PartyPopper } from 'lucide-react';
+import { CheckCircle, X, Sparkles } from 'lucide-react';
 
 const SuccessModal = ({ tokensBought, onClose }) => {
   if (!tokensBought) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70">
-      <div className="bg-gray-900 text-white p-6 rounded-2xl shadow-xl w-full max-w-sm text-center border border-gray-700">
-        <div className="flex justify-center mb-3 space-x-3">
-          <CheckCircle className="text-green-400 w-8 h-8" />
-        </div>
-        <h2 className="text-2xl font-bold text-green-400 mb-2">Purchase Successful</h2>
-        <p className="text-gray-300">You’ve received:</p>
-    
-    <div className='flex items-center justify-center'>    <PartyPopper className="text-yellow-400 w-6 h-6 mr-1 " />
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
 
-        <p className="text-2xl font-semibold text-blue-500 mt-4">{tokensBought} $DEM Tokens</p>
+      {/* Modal */}
+      <div className="relative z-10 w-full max-w-sm mx-4 success-modal-card">
+        {/* Glow */}
+        <div className="success-modal-glow" />
 
-        </div>
-        <p className="text-xs font-semibold text-blue-300 mt-1 mb-4">Thanks for being part of community</p>
-
-        <button
-          onClick={onClose}
-          className="mt-4 px-5 py-2 bg-blue-900 hover:bg-blue-700 text-white rounded-lg transition"
-        >
-          Close
+        {/* Close */}
+        <button onClick={onClose} className="absolute top-4 right-4 text-slate-500 hover:text-white transition-colors">
+          <X className="h-4 w-4" />
         </button>
+
+        <div className="relative z-10 text-center p-6">
+          {/* Icon */}
+          <div className="flex justify-center mb-4">
+            <div className="success-icon-ring">
+              <CheckCircle className="h-8 w-8 text-emerald-400" />
+            </div>
+          </div>
+
+          <h2 className="text-xl font-bold text-white mb-1">Purchase Confirmed!</h2>
+          <p className="text-slate-400 text-sm mb-5">Your $TTC tokens are on the way.</p>
+
+          {/* Amount box */}
+          <div className="success-amount-box mb-5">
+            <div className="flex items-center justify-center gap-2">
+              <Sparkles className="h-4 w-4 text-amber-400 animate-pulse" />
+              <span className="text-2xl font-black text-white">{tokensBought}</span>
+              <span className="text-amber-400 font-bold text-lg">$TTC</span>
+            </div>
+            <p className="text-xs text-slate-500 mt-1">Tokens Received</p>
+          </div>
+
+          <p className="text-xs text-slate-500 mb-5">
+            Thank you for joining the TIP Nation ecosystem.
+          </p>
+
+          <button onClick={onClose} className="success-close-btn">
+            Close
+          </button>
+        </div>
       </div>
     </div>
   );
