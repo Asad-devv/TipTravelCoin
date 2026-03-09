@@ -17,8 +17,7 @@ const Navbar = () => {
         }`}>
             <div className="max-w-6xl mx-auto flex items-center justify-between h-[72px]">
                 {/* Logo */}
-                {/* <im
-                g src="./logo.jpg" className="h-12 w-auto rounded-full" alt="TIP Nation" /> */}
+                <span className="text-2xl font-black tracking-tight text-white">TIP</span>
 
                 {/* Connect Wallet */}
                 <appkit-button />

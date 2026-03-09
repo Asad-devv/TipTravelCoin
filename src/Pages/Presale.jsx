@@ -189,7 +189,7 @@ function App() {
           {[
             { label: 'Token Price', value: '$0.01', sub: 'Phase 1' },
             { label: 'Total Supply', value: '50M',  sub: '$TTC'   },
-            { label: 'Time Left',   value: '35',    sub: 'Days'   },
+            { label: 'Sale',        value: 'Open',  sub: 'No Limit' },
           ].map((stat, i) => (
             <div key={i} className="presale-stat-card">
               <p className="presale-stat-label">{stat.label}</p>
