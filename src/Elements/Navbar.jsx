@@ -15,10 +15,7 @@ const Navbar = () => {
                 ? 'bg-black/50 backdrop-blur-md border-b border-white/5'
                 : 'bg-transparent'
         }`}>
-            <div className="max-w-6xl mx-auto flex items-center justify-between h-[72px]">
-                {/* Logo */}
-                <span className="text-2xl font-black tracking-tight text-white">TIP</span>
-
+            <div className="max-w-6xl mx-auto flex items-center justify-center h-[72px]">
                 {/* Connect Wallet */}
                 <appkit-button />
             </div>

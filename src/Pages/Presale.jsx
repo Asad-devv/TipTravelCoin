@@ -176,7 +176,7 @@ function App() {
           <p className="presale-eyebrow">TIP Nation Ecosystem</p>
           <h1 className="presale-title">TipTravelCoin</h1>
           <div className="presale-ticker-row">
-            <span className="presale-ticker">$TTC</span>
+            <span className="presale-ticker">$TIP</span>
           </div>
           <p className="presale-subtitle">
             Travel. Earn. Empower Communities.<br />
@@ -188,7 +188,7 @@ function App() {
         <div className="grid grid-cols-3 gap-3 mb-6">
           {[
             { label: 'Token Price', value: '$0.01', sub: 'Phase 1' },
-            { label: 'Total Supply', value: '50M',  sub: '$TTC'   },
+            { label: 'Total Supply', value: '50M',  sub: '$TIP'   },
             { label: 'Sale',        value: 'Open',  sub: 'No Limit' },
           ].map((stat, i) => (
             <div key={i} className="presale-stat-card">
@@ -205,7 +205,7 @@ function App() {
           {/* Card header */}
           <div className="presale-card-header">
             <Sparkles className="h-4 w-4 text-amber-400" />
-            <span>Secure your $TTC tokens</span>
+            <span>Secure your $TIP tokens</span>
           </div>
 
           {/* Presale Progress */}
@@ -226,7 +226,7 @@ function App() {
             </div>
             <div className="flex justify-between mt-1.5">
               <span className="presale-progress-end">{tokensSoldDisplay} sold</span>
-              <span className="presale-progress-end">50,000,000 $TTC</span>
+              <span className="presale-progress-end">50,000,000 $TIP</span>
             </div>
           </div>
 
@@ -282,7 +282,7 @@ function App() {
               <span className="presale-receive-amount">
                 {previewLoading && parsedAmountWei ? '...' : displayTokens}
               </span>
-              <span className="presale-receive-symbol">$TTC</span>
+              <span className="presale-receive-symbol">$TIP</span>
             </div>
           </div>
 
@@ -300,8 +300,8 @@ function App() {
               <div className="presale-hiw-body">
                 {[
                   { icon: <Wallet className="h-4 w-4" />, step: '01', title: 'Connect Wallet', desc: 'Use MetaMask or any Web3 wallet on Arbitrum.' },
-                  { icon: <Coins className="h-4 w-4" />, step: '02', title: 'Buy $TTC', desc: 'Enter an ETH amount and confirm the transaction.' },
-                  { icon: <CheckCircle2 className="h-4 w-4" />, step: '03', title: 'Tokens Delivered', desc: 'Your $TTC lands in your wallet instantly.' },
+                  { icon: <Coins className="h-4 w-4" />, step: '02', title: 'Buy $TIP', desc: 'Enter an ETH amount and confirm the transaction.' },
+                  { icon: <CheckCircle2 className="h-4 w-4" />, step: '03', title: 'Tokens Delivered', desc: 'Your $TIP lands in your wallet instantly.' },
                 ].map((item, i) => (
                   <div key={i} className="presale-hiw-step">
                     <div className="presale-hiw-icon">{item.icon}</div>
@@ -334,7 +334,7 @@ function App() {
               <span>Connect Wallet to Buy</span>
             ) : (
               <>
-                <span>Buy $TTC with ETH</span>
+                <span>Buy $TIP with ETH</span>
                 <ArrowRight className="h-4 w-4" />
               </>
             )}
@@ -343,7 +343,7 @@ function App() {
           {/* User's total purchased — shown only when they've bought tokens */}
           {userTokensDisplay && (
             <p className="text-center text-[11px] text-slate-500 mt-3">
-              Your total: <span className="text-amber-400 font-semibold">{userTokensDisplay} $TTC</span> purchased
+              Your total: <span className="text-amber-400 font-semibold">{userTokensDisplay} $TIP</span> purchased
             </p>
           )}
 
